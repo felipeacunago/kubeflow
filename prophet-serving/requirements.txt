@@ -1,0 +1,8 @@
+numpy
+pystan
+fbprophet
+google-cloud-storage==1.20.0
+gcsfs==0.3.0
+retry==0.9.2
+Flask==1.1.1
+environs==6.0.0

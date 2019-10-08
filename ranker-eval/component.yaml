@@ -1,0 +1,17 @@
+name: dataset-preprocess
+description: Performs data preprocess.
+inputs:
+- {name: Predicted Ranking Path, type: String, description='Path for predicted ranking file'}
+- {name: Real Ranking Path, type: String, description='Path for real ranking file'}
+- {name: Eval date, type: String, description='Date to use for evaluation'}
+- {name: Maximum distance, type: String, description='Maximum difference on ranking to be considered as a valid prediction'}
+implementation:
+  container:
+    image: docker.io/felipeacunago/dataset-preprocess
+    command: [
+      python3, task.py,
+      --predicted-ranking-path,       {inputValue: Predicted Ranking Path},
+      --real-ranking-path,         {inputValue: Real Ranking Path},
+      --eval-date,  {inputValue: Eval date},
+      --maximum-distance,  {inputValue: Maximum distance}
+    ]

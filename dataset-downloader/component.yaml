@@ -1,0 +1,16 @@
+name: data-downloader
+description: Performs data downloading.
+inputs:
+- {name: File URL, type: String, description='File URL to be downloaded'}
+- {name: Local path, type: String, description='Local path where the file will be downloaded'} # The default values must be specified as YAML strings.
+outputs:
+- {name: Output path, type: GCSPath, description='Local path where the file was be downloaded'}
+implementation:
+  container:
+    image: docker.io/felipeacunago/data-downloader
+    command: [
+      python3, task.py,
+      --download-url,       {inputValue: File URL},
+      --local-path,         {inputValue: Local path},
+      --output-path-file,  {outputPath: Output path},
+    ]

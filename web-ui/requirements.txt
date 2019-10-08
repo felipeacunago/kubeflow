@@ -1,0 +1,5 @@
+pandas
+dash
+Flask==1.1.1
+environs==6.0.0
+requests==2.22.0

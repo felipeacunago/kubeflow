@@ -1,0 +1,26 @@
+name: dataset-ranker
+description: Performs ranking per day.
+inputs:
+- {name: Input Path, type: String, description: 'Paths of inputs for certain id to rank'}
+- {name: Input Path Names, type: List, description: 'Names of the input values'}
+- {name: Ranking factors, type: List, description: 'Importance factors for ranking (the sum is 1)'}
+- {name: Input dictionary, type: GCSPath, description: 'Grouping dictionary path'}
+- {name: Training date, type: String, description: 'Maximum date to consider for reading data'}
+- {name: Prediction Periods, type: Integer, description: 'Amount of days starting from training date to generate data'}
+- {name: Ranking Output Path, type: GCSPath, description: 'Path to output the ranking'}
+outputs:
+- {name: Ranking Output Path File, type: GCSPath, description: 'Path of the file where output path will should be written'}
+implementation:
+  container:
+    image: docker.io/felipeacunago/ranker:latest
+    command: [
+      python3, task.py,
+      --input-path,       {inputValue: Input Path},
+      --input-path-names,         {inputValue: Input Path Names},
+      --ranking-factors,  {inputValue: Ranking factors},
+      --input-dictionary,  {inputValue: Input dictionary},
+      --training-date,  {inputValue: Training date},
+      --prediction-periods,  {inputValue: Prediction Periods},
+      --ranking-output-path,  {inputValue: Ranking Output Path},
+      --ranking-output-path-file,  {outputPath: Ranking Output Path File}
+    ]

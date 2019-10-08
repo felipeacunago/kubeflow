@@ -1,0 +1,25 @@
+name: dataset-preprocess
+description: Performs data preprocess.
+inputs:
+- {name: Dataset Path, type: String, description='URL where the file is located'}
+- {name: Output Path, type: String, description='Local path where the file will be processed'}
+- {name: Split column, type: String, description='Split column name'}
+- {name: DS column, type: String, description='Time column name'}
+- {name: Y column, type: String, description='Y column name'}
+- {name: Training date, type: String, description='Training date'}
+- {name: Minimum Length, type: String, description='Minimum amount of rows to be considered in the output (default=0)'}
+- {name: Order ds, type: String, description='Order ds column output (asc/desc/none).'}
+implementation:
+  container:
+    image: docker.io/felipeacunago/dataset-preprocess:latest
+    command: [
+      python3, task.py,
+      --dataset-path,       {inputValue: Dataset Path},
+      --output-path,         {inputValue: Output Path},
+      --split-column,  {inputValue: Split column},
+      --ds-column,  {inputValue: DS column},
+      --y-column,  {inputValue: Y column},
+      --minimum-length,  {inputValue: Minimum Length},
+      --training-date,  {inputValue: Training date},
+      --order-ds,  {inputValue: Order ds}
+    ]

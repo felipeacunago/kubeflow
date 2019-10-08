@@ -1,0 +1,19 @@
+name: timeseries-prophet-train
+description: Performs data training.
+inputs:
+- {name: Path of the file to load, type: String, description='File URL to be downloaded'}
+- {name: Change point prior scale, type: String, description='Change point prior scale'}
+- {name: Model output path, type: String, description='Model output path'}
+outputs:
+- {name: Model output path, type: GCSPath, description='Model output path'}
+implementation:
+  container:
+    image: docker.io/felipeacunago/timeseries-prophet-train
+    command: [
+      python3, /pipelines/component/src/train.py,
+      --dataset-path,       {inputValue: Path of the file to load},
+      --changepoint-prior-scale,         {inputValue: Change point prior scale},
+      --predict-periods,  {outputPath: Predict Periods},
+      --predict-freq,  {outputPath: Predict Frequency},
+      --model-output-path, {outputPath: Model output path},
+    ]
