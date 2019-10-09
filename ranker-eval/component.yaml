@@ -14,6 +14,6 @@ implementation:
       --real-ranking-path,         {inputValue: Real Ranking Path},
       --eval-date,  {inputValue: Eval date},
       --maximum-distance,  {inputValue: Maximum distance}
-    ],
+    ]
     fileOutputs:
       Category Table metadata: /table.json
