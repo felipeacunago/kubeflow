@@ -1,5 +1,5 @@
-name: dataset-preprocess
-description: Performs data preprocess.
+name: ranker-eval
+description: Performs evaluation of ranking
 inputs:
 - {name: Predicted Ranking Path, type: String, description='Path for predicted ranking file'}
 - {name: Real Ranking Path, type: String, description='Path for real ranking file'}
