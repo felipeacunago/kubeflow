@@ -21,7 +21,7 @@ parser.add_argument('--predicted-ranking-path', type=str, help='Paths of the pre
 parser.add_argument('--real-ranking-path', type=str, help='Paths of the real ranking')
 parser.add_argument('--eval-date', type=str, help='Date where the evaluation will be done')
 parser.add_argument('--maximum-distance', type=int, default=0, help='Maximum distance of the prediction and real ranking to be considered as a valid prediction (default = 0 / Perfect match)')
-parser.add_argument('--output', type=int, default=0, help='GCS evaluation output folder')
+parser.add_argument('--output', type=str, help='GCS evaluation output folder')
 args = parser.parse_args()
 
 # rename input variables
