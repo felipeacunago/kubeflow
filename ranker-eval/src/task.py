@@ -132,5 +132,5 @@ metadata = {
       'source': local_output_file
     }]
   }
-with open('/output.json', 'w') as f:
+with open('/table.json', 'w') as f:
     json.dump(metadata, f)

@@ -7,11 +7,13 @@ inputs:
 - {name: Maximum distance, type: String, description='Maximum difference on ranking to be considered as a valid prediction'}
 implementation:
   container:
-    image: docker.io/felipeacunago/dataset-preprocess
+    image: docker.io/felipeacunago/ranker-eval:latest
     command: [
       python3, task.py,
       --predicted-ranking-path,       {inputValue: Predicted Ranking Path},
       --real-ranking-path,         {inputValue: Real Ranking Path},
       --eval-date,  {inputValue: Eval date},
       --maximum-distance,  {inputValue: Maximum distance}
-    ]
+    ],
+    fileOutputs:
+      Category Table metadata: /table.json
