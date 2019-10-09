@@ -21,6 +21,7 @@ parser.add_argument('--predicted-ranking-path', type=str, help='Paths of the pre
 parser.add_argument('--real-ranking-path', type=str, help='Paths of the real ranking')
 parser.add_argument('--eval-date', type=str, help='Date where the evaluation will be done')
 parser.add_argument('--maximum-distance', type=int, default=0, help='Maximum distance of the prediction and real ranking to be considered as a valid prediction (default = 0 / Perfect match)')
+parser.add_argument('--output', type=int, default=0, help='GCS evaluation output folder')
 args = parser.parse_args()
 
 # rename input variables
@@ -28,6 +29,7 @@ predicted_ranking_path = args.predicted_ranking_path
 real_ranking_path = args.real_ranking_path
 eval_date = args.eval_date
 maximum_distance = args.maximum_distance
+output = args.output
 
 def list_gcs_files(path):
     """
@@ -122,15 +124,17 @@ for grouping_compare_name in rankings_to_eval:
 
 # pending to generate output as artifact
 print(eval_df)
-local_output_file = 'local.csv'
-eval_df.to_csv(local_output_file)
+output_file = os.path.join(output,'table.csv')
+eval_df.to_csv(output_file)
 metadata = {
     'outputs' : [{
       'type': 'table',
+      'storage': 'gcs',
       'format': 'csv',
       'header': list(eval_df.columns.values),
-      'source': local_output_file
+      'source': output_file
     }]
   }
+print(metadata)
 with open('/table.json', 'w') as f:
     json.dump(metadata, f)
