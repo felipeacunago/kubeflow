@@ -123,9 +123,8 @@ for grouping_compare_name in rankings_to_eval:
     eval_df = eval_df.append(row_dict, ignore_index=True)
 
 # pending to generate output as artifact
-print(eval_df)
 output_file = os.path.join(output,'table.csv')
-eval_df.to_csv(output_file)
+eval_df.to_csv(output_file, index=False, header=False)
 metadata = {
     'outputs' : [{
       'type': 'table',
@@ -135,6 +134,5 @@ metadata = {
       'source': output_file
     }]
   }
-print(metadata)
-with open('/table.json', 'w') as f:
+with open('/mlpipeline-ui-metadata.json', 'w') as f:
     json.dump(metadata, f)
