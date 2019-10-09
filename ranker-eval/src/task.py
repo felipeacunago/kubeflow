@@ -128,7 +128,7 @@ metadata = {
     'outputs' : [{
       'type': 'table',
       'format': 'csv',
-      'header': eval_df.columns,
+      'header': list(eval_df.columns.values),
       'source': local_output_file
     }]
   }
