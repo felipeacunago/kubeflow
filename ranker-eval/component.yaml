@@ -5,6 +5,7 @@ inputs:
 - {name: Real Ranking Path, type: String, description: 'Path for real ranking file'}
 - {name: Eval date, type: String, description: 'Date to use for evaluation'}
 - {name: Maximum distance, type: Integer, description: 'Maximum difference on ranking to be considered as a valid prediction'}
+- {name: Output dir, type: GCSPath, description: 'Experiment evaluation'}
 outputs:
   - {name: Category Table metadata, type: UI metadata}
 implementation:
@@ -15,7 +16,8 @@ implementation:
       --predicted-ranking-path,       {inputValue: Predicted Ranking Path},
       --real-ranking-path,         {inputValue: Real Ranking Path},
       --eval-date,  {inputValue: Eval date},
-      --maximum-distance,  {inputValue: Maximum distance}
+      --maximum-distance,  {inputValue: Maximum distance},
+      --output, {inputValue: Output dir}
     ]
     fileOutputs:
       Category Table metadata: /table.json
