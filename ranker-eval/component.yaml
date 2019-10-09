@@ -5,6 +5,8 @@ inputs:
 - {name: Real Ranking Path, type: String, description: 'Path for real ranking file'}
 - {name: Eval date, type: String, description: 'Date to use for evaluation'}
 - {name: Maximum distance, type: Integer, description: 'Maximum difference on ranking to be considered as a valid prediction'}
+outputs:
+  - {name: Category Table metadata, type: UI metadata}
 implementation:
   container:
     image: docker.io/felipeacunago/ranker-eval:latest
