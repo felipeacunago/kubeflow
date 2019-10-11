@@ -12,26 +12,27 @@ class LSTM_train:
             data_has_lag=False, # if the data already contains the lag (t-n)
             n_features = 2,
             timesteps = 2,
-            lstm_type='LSTM'
+            lstm_type='LSTM',
+            epochs=1000
         ):
 
         self.data_has_lag = data_has_lag
-        self.n_features = 0
         self.n_features = n_features
         self.timesteps = timesteps
+        self.epochs = epochs
 
         self.build_model(lstm_type)
 
     def build_model(self,lstm_type, n_features = 2):
         self.model = Sequential()
-        self.model.add(LSTM(50, activation='relu', input_shape=(timesteps, self.n_features)))
+        self.model.add(LSTM(50, activation='relu', input_shape=(self.timesteps, self.n_features)))
         self.model.add(Dense(1))
 
-    def set_dataset(self,dataset):
+    def set_dataset(self,dataset, target_col='target'):
         if self.data_has_lag:
             X, Y = dataset.values
         else:
-            X, Y = self.series_lag(dataset, timesteps=self.timesteps, target_col='target', debug=True)
+            X, Y = self.series_lag(dataset, timesteps=self.timesteps, target_col=target_col, debug=True)
 
         # reshape from [samples, timesteps] into [samples, timesteps, features]
         X = X.reshape((X.shape[0], self.timesteps, self.n_features))
@@ -39,60 +40,56 @@ class LSTM_train:
         print(X)
         self.X, self.Y = X, Y
 
-    def train(self, n_features = 2):
-        optimizer = optimizers.Adam(lr=0.01, beta_1=0.9, beta_2=0.999, amsgrad=False)
+    def train(self, n_features = 2, optimizer = None):
+        if not optimizer:
+            optimizer = optimizers.Adam(lr=0.01, beta_1=0.9, beta_2=0.999, amsgrad=False)
 
         self.model.compile(optimizer=optimizer, loss='mse')
         self.model.fit(self.X, self.Y, epochs=1000, verbose=1)
 
-    def series_lag(self, data, timesteps=2, n_out=1, dropnan=True, target_col='target', debug=False):
-        inputs = data.drop([target_col], axis=1)
-        Y = data[target_col].shift(-timesteps)
+    def series_lag(self, data, timesteps=1, n_out=1, dropnan=True, target_col='target', debug=False):
+        """
+        Frame a time series as a supervised learning dataset.
+        Arguments:
+            data: Sequence of observations as a list or NumPy array.
+            n_in: Number of lag observations as input (X).
+            n_out: Number of observations as output (y).
+            dropnan: Boolean whether or not to drop rows with NaN values.
+        Returns:
+            Pandas DataFrame of series framed for supervised learning.
+        """
+        n_vars = data.shape[1]
+        df = data.rename(columns={target_col: 'target'})
 
-        n_vars = 1 if type(inputs) is list else inputs.shape[1]
-        columns = list(inputs.columns.values)
-
+        columns = df.columns
         cols, names = list(), list()
-
+        # input sequence (t-n, ... t-1)
         for i in range(timesteps, 0, -1):
-            cols.append(inputs.shift(i))
-            names += [('%s%d(t-%d)' % (columns[j],j+1, i)) for j in range(n_vars)]
+            cols.append(df.shift(i))
+            names += [('var%d(t-%d)' % (j+1, i)) for j in range(n_vars)]
+        # names.sort()
+        # forecast sequence (t, t+1, ... t+n)
+        for i in range(0, n_out):
+            cols.append(df.shift(-i))
+            if i == 0:
+                names += [('%s(t)' % (columns[j])) for j in range(n_vars)]
+            else:
+                names += [('%s(t+%d)' % (columns[j], i)) for j in range(n_vars)]
+        # put it all together
+        agg = pd.concat(cols, axis=1)
+        
+        agg.columns = names
 
-        X = pd.concat(cols, axis=1)
-        names.sort()
-        X.columns = names
+        cols_to_drop = [c for c in names if not 'target' in c.lower() and '(t)' in c.lower()]
+        agg.drop(columns=cols_to_drop, inplace=True)
         # drop rows with NaN values
         if dropnan:
-            X.dropna(inplace=True)
-        
-        Y.dropna(inplace=True)
+            agg.dropna(inplace=True)
 
-        if debug:
-            print(X)
-            print(Y)
+        X = agg.drop(['target(t)'], axis=1)
+        Y = agg['target(t)']
 
         return X.values, Y.values
 
     def predict(self,X):
         return self.model.predict(X)
-
-    
-
-data = pd.DataFrame({'A': np.linspace(1, 10, num=10), 'B': np.linspace(1, 10, num=10)*2})
-
-data['target'] = data['A']*2 + data['B']*5 + 1
-
-timesteps = 2
-
-lstm = LSTM_train(timesteps=timesteps)
-lstm.set_dataset(data)
-lstm.train()
-
-
-
-# define model
-test = np.random.rand(1,timesteps,2)
-print(test)
-yhat = lstm.predict(test)
-
-print(yhat)
