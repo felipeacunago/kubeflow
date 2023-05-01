@@ -1,5 +1,5 @@
 pandas
 dash
-Flask==1.1.1
+Flask==2.3.2
 environs==6.0.0
 requests==2.22.0
